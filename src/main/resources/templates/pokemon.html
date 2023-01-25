@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.0.1/css/foundation.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.0.1/js/foundation.min.js">
+	</script>
+	<meta charset="utf-8" />
+	<title>POKEFIND</title>
+</head>
+
+<body style='background-color: #DFCFF4;'>
+
+	<div class="container" id="app">
+		<div class="top-bar" id="example-menu" style="background-color: black;">
+			<div class="top-bar-left">
+				<ul class="dropdown menu" data-dropdown-menu>
+					<li class="menu-text" style="color:aliceblue;background-color: black">POKEFIND</li>
+					<li class="has-submenu">
+						<a th:href="@{/}" style="background-color: black;color:blueviolet">Catalogo</a>
+					</li>
+			</div>
+			<div class="top-bar-right">
+				<form th:action="@{/logout}" method="post">
+					<button type="submit" style="color:blueviolet;margin-top: 10px;">Logout</button>
+				</form>
+			</div>
+		</div>
+	<div style="background-color: black;">
+	<center>
+	<ul class="pagination">
+	
+					<li><button @click="findPokemons(previous)" style="color:floralwhite"> previous <button></li>
+					<li><button @click="findPokemons(url)" style="color:floralwhite"> initial <button></li>
+					<li><button @click="findPokemons(next)" style="color:floralwhite"> next <button></li>
+					</ul>
+						</center>
+	</div>
+	
+
+								<div class="columns medium-12">
+
+									<div class="small-3 large-4 columns align-cente" v-for="item in results"
+										:key='item.nombre'>
+										<center>{{ item.nombre }}</center> <img :src="`${item.imagen}`" />
+
+									</div>
+								</div>
+	</div>
+	<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</body>
+
+</html>
+
+<script>
+
+	const {createApp} = Vue;
+
+
+	createApp({
+		data() {
+			return {
+				results: [],
+				url: "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=24",
+				next: "",
+				previous: ""
+			};
+		},
+		methods: {
+
+			async findPokemons(url) {
+				this.results = [];
+				axios
+					.get(url)
+					.then((response) => {
+						this.next = response.data.next;
+						this.previous = response.data.previous;
+						return response.data.results;
+					})
+					.then((response) => {
+						response.forEach((element) => {
+							axios
+								.get(element.url)
+								.then((response2) => {
+									const pokemonObj = {
+										nombre: response2.data.name,
+										imagen: response2.data.sprites.other.home.front_default,
+									};
+
+									this.results.push(pokemonObj)
+
+								});
+						});
+
+					});
+			}
+		},
+
+		created() {
+
+			this.findPokemons(this.url);
+		}
+	}).mount("#app");
+
+
+
+</script>
