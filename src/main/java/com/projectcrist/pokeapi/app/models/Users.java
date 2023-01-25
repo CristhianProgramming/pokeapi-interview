@@ -29,7 +29,6 @@ public class Users {
 	@Column(length = 100,nullable = false,unique = true)
 	private String userEmail;
 	
-	@Column(length = 45)
 	private String userPassword;
 	
 	@DateTimeFormat(iso = ISO.DATE_TIME)
@@ -39,6 +38,8 @@ public class Users {
 	private void newDateCreation() {
 		creationDate = new Date();
 	}
+	
+	public Users() {};
 	
 	public Users(String userName, @Email String userEmail, String userPassword, Date creationDate) {
 		this.userName = userName;
